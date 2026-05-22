@@ -64,3 +64,45 @@ header {
     padding-bottom: 27px;
     text-align: center;
 }
+
+.schedule-container {
+  font-family: system-ui, sans-serif;
+  margin: 20px;
+  overflow-x: auto; /* Makes sure it doesn't break on small desktop monitors */
+}
+
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse; /* Cleans up double borders */
+  background: #ffffff;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.interval-wrapper {
+  display: flex;
+  gap: 2px; /* Small layout separation between your 10 minute blocks */
+  width: 100%;
+  height: 36px; /* Height of your appointment row row */
+}
+
+.minute-box {
+  flex: 1; /* Tells all 6 boxes to share the column width equally */
+  background-color: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 3px;
+  cursor: default;
+  transition: all 0.15s ease;
+  pointer-events: auto;
+  user-select: none; 
+  -webkit-user-select: none;
+}
+
+.minute-box.selected {
+  background-color: #3b82f6 !important; /* Vibrant slate blue */
+  border: 1px solid #1d4ed8 !important;  /* Darker navy blue border */
+  cursor: default;
+  user-select: none; 
+  -webkit-user-select: none;
+}

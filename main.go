@@ -7,12 +7,18 @@ import (
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
-	ts, err := template.ParseFiles("./templates/base.html")
+	files := []string{
+		"./templates/base.tmpl",
+		"./templates/schedule.tmpl",
+	}
+
+	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
-	err = ts.Execute(w, nil)
+	scheduleData := ScheduleHandler(w, r)
+	err = ts.ExecuteTemplate(w, "base", scheduleData)
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
