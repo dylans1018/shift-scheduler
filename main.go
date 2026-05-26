@@ -32,6 +32,7 @@ func main() {
 	mux.Handle("GET /static/", http.StripPrefix("/static", fileServer))
 
 	mux.HandleFunc("/", home)
+	mux.HandleFunc("/schedule/select", UpdateScheduleHandler)
 
 	log.Print("starting server on :4000")
 	err := http.ListenAndServe(":4000", mux)

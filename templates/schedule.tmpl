@@ -30,7 +30,9 @@
                         </div>
                     </td>
                 {{end}}
-                <th scope="row">{{$day.DayLabel}}</th>
+                <th scope="row">
+                <span id="counter-{{$day.DayLabel}}">(0.00 hrs)</span>
+                </th>
             </tr>
             {{end}}
         </tbody>
@@ -39,43 +41,51 @@
     <form id="selection-form"
     hx-post="/schedule/select"
     hx-trigger="submit-selection from:body"
-    hx-target="#schedule-matrix"
-    hx-swap="outerHTML">
+    hx-swap="none">
     <input type="hidden" name="selected_slots" id="selected-slots-input">
     </form>
 
     <script type="text/javascript">
         if (typeof isDragging === 'undefined') {
             var isDragging = false
+            var isSelected = false
             var selectedSlots = []
         }
 
         function startSelection(element) {
             isDragging = true
-            selectedSlots = []
-
-            addSlot(element)
+            if (element.classList.contains('selected')) {
+                isSelected = true
+            } else {
+                isSelected = false
+            }
+            toggleSlot(element)
         }
 
         function dragSelection(element){
             if (!isDragging) return
-            addSlot(element)
+            toggleSlot(element)
         }
 
-        function addSlot(element) {
+        function toggleSlot(element) {
             var identifier = element.dataset.day + "||" + element.dataset.time
-
-            if (selectedSlots.indexOf(identifier) === -1) {
-                selectedSlots.push(identifier)
-                element.classList.add('selected')
+            const index = selectedSlots.indexOf(identifier)
+            if (isSelected) {
+                if (index !== -1) {
+                    selectedSlots.splice(index, 1)
+                    element.classList.remove('selected')
+                }
+            } else {
+                if (index === -1) {
+                    selectedSlots.push(identifier)
+                    element.classList.add('selected')
+                }
             }
         }
 
         function endSelection() {
             if (!isDragging) return
             isDragging = false
-
-            if (selectedSlots.length === 0) return
 
             document.getElementById('selected-slots-input').value = JSON.stringify(selectedSlots)
 

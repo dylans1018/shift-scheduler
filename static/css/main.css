@@ -106,3 +106,12 @@ header {
   user-select: none; 
   -webkit-user-select: none;
 }
+
+.day-counter {
+    font-size: 0.8rem;          /* Make it slightly smaller than the day label */
+    font-weight: 500;           /* Medium weight so it's readable but not overly bold */
+    color: #6b7280;             /* A muted, neutral gray (Tailwind gray-500) */
+    margin-left: 8px;           /* Push it away from the day text so they don't mash together */
+    display: inline-block;      /* Ensures margin behaves correctly inside the <th> */
+    vertical-align: middle;     /* Keeps it perfectly aligned with the text baseline */
+}
