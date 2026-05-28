@@ -13,10 +13,19 @@
     <body>
         <header>
             <h1><a href='/'>Shift Scheduler</a></h1>
+
+            {{if .Role}}
+                <div class="user-profile">
+                    <span>Logged in as: <strong>{{.Role}}</strong></span>
+                    <button hx-post="/logout" style="margin-left: 10px;">Log Out</button>
+                </div>
+            {{end}}
         </header>
+
         <main>
-            {{template "schedule" .}}
+            {{template "content" .}}
         </main>
+
         <footer>Powered by <a href='https://mendix.byu.edu/'>BYU LowCode => Go</a></footer>
     </body>
 </html>

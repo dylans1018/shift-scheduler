@@ -69,6 +69,7 @@ header {
   font-family: system-ui, sans-serif;
   margin: 20px;
   overflow-x: auto; /* Makes sure it doesn't break on small desktop monitors */
+  padding-bottom: 15px;
 }
 
 .schedule-table {
@@ -114,4 +115,16 @@ header {
     margin-left: 8px;           /* Push it away from the day text so they don't mash together */
     display: inline-block;      /* Ensures margin behaves correctly inside the <th> */
     vertical-align: middle;     /* Keeps it perfectly aligned with the text baseline */
+}
+
+#schedule-error-container:not(:empty) {
+    background-color: #fef2f2;   /* Soft red background */
+    border: 1px solid #f87171;   /* Solid red border */
+    color: #991b1b;              /* Dark red text */
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    white-space: pre-line;       /* Preserves the \n linebreaks from Go */
 }

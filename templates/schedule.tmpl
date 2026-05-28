@@ -1,4 +1,4 @@
-{{define "schedule"}}
+{{define "content"}}
 <div class="schedule-container" id="schedule-matrix" onmouseup="endSelection()">
     <header>
         <h2>Current Schedule:</h2>
@@ -7,13 +7,13 @@
         <thead>
             <tr>
                 <th scope="col"></th>
-                {{range (index . 0).Hours}}
+                {{range (index .Schedule 0).Hours}}
                     <th scope="col">{{.HourLabel}}</th>
                 {{end}}
             </tr>
         </thead>
         <tbody>
-            {{range $day := .}}
+            {{range $day := .Schedule}}
             <tr>
                 <th scope="row">{{$day.DayLabel}}</th>
                 {{range $hour := $day.Hours}}
@@ -93,4 +93,7 @@
         }
     </script>
 </div>
+
+<div id="schedule-error-container"></div>
+
 {{end}}

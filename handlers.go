@@ -28,7 +28,7 @@ var minutesMap = [7]string{":00", ":10", ":20", ":30", ":40", ":50", ":00"}
 var daysOfWeek = []string{"Mon", "Tues", "Wed", "Thurs", "Fri"}
 var hoursOfDay = []string{"8 am", "9 am", "10 am", "11 am", "12 pm", "1 pm", "2 pm", "3 pm", "4 pm", "5 pm", "6 pm"}
 
-func ScheduleHandler(w http.ResponseWriter, r *http.Request) []DayRow {
+func NewScheduleHandler(w http.ResponseWriter, r *http.Request) []DayRow {
 
 	var scheduleData []DayRow
 
@@ -96,10 +96,11 @@ func UpdateScheduleHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
 	var responseHTML strings.Builder
+	errorOOBElement := updateScheduleErrorHandler(dayToHoursMap)
+	responseHTML.WriteString(errorOOBElement)
 	for _, day := range daysOfWeek {
-		// We build an OOB element for EVERY day.
-		// If a day has 0 hours, it will reset to (0 hrs) on the screen.
 		hours := dayToHoursMap[day]
+
 		fmt.Fprintf(&responseHTML,
 			`<span id="counter-%s" hx-swap-oob="true">(%.2f hrs)</span>`,
 			day, hours,
@@ -107,6 +108,49 @@ func UpdateScheduleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Write([]byte(responseHTML.String()))
+}
+
+func updateScheduleErrorHandler(dayToHoursMap map[string]float64) string {
+	const minDailyAllowedHours = 3.0
+	const maxDailyAllowedHours = 9.0
+	const minWeeklyAllowedHours = 20.0
+	const maxWeeklyAllowedHours = 40.0
+
+	var errorMessages []string
+	selectedWeeklyHours := 0.0
+
+	for day, hours := range dayToHoursMap {
+		selectedWeeklyHours += hours
+
+		if hours > 0.0 && hours < minDailyAllowedHours {
+			errorMessages = append(errorMessages,
+				fmt.Sprintf("• %s: Scheduled %.2f hours (Minimum daily requirement is %.2f hours)", day, hours, minDailyAllowedHours),
+			)
+		}
+
+		if hours > 9.0 {
+			errorMessages = append(errorMessages,
+				fmt.Sprintf("• %s: Scheduled %.2f hours (Maximum daily allotment is %.2f hours)", day, hours, maxDailyAllowedHours),
+			)
+		}
+	}
+
+	if selectedWeeklyHours < minWeeklyAllowedHours && selectedWeeklyHours > 0.0 {
+		errorMessages = append(errorMessages,
+			fmt.Sprintf("• Weekly Total: You are missing the minimum weekly requirement of %.2f hours (Scheduled %.2f hours)", minWeeklyAllowedHours, selectedWeeklyHours),
+		)
+	}
+	if selectedWeeklyHours > maxWeeklyAllowedHours {
+		errorMessages = append(errorMessages,
+			fmt.Sprintf("• Weekly Total: You are exceeding the maximum weekly allotment of %.2f hours (Scheduled %.2f hours)", maxWeeklyAllowedHours, selectedWeeklyHours),
+		)
+	}
+
+	if len(errorMessages) > 0 {
+		combinedMessage := "<strong>**ERROR** Please fix the following scheduling conflicts:</strong>\n\n" + strings.Join(errorMessages, "\n")
+		return fmt.Sprintf(`<div id="schedule-error-container" hx-swap-oob="true">%s</div>`, combinedMessage)
+	}
+	return `<div id="schedule-error-container" hx-swap-oob="true"></div>`
 }
 
 func backendDailyHoursCounter(intervals []string) map[string]float64 {
